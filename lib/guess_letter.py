@@ -72,6 +72,7 @@ def freq_based(wordlist, chars_used):
 # Run --------------------------------------------------------------------------
 def run():
     wordlist = make_wordlist('./somanywords.txt')
+    print(f'There are {len(wordlist)} words left.')
     found = False
     chars_used = []
     while not found:
@@ -85,6 +86,7 @@ def run():
             most_frequent_char = freq_based(narrowed_list, chars_used)
             chars_used.append(most_frequent_char)
             print(f'You should choose "{most_frequent_char}" this time.')
+        print(f'There are {len(narrowed_list)} words left.')
     print('Congratulations!')
 
 
