@@ -1,93 +1,123 @@
-#!/bin/#!/usr/bin/env python3
+#!/usr/bin/env python3
 
 # guess_letter.py
 # Michael Cole
 # ------------------------------------------------------------------------------
-
-# Read in somanywords.txt
-def make_wordlist(word_file):
-    with open(word_file) as textfile:
-        original_wordlist = textfile.readlines()
-    # remove whitespace
+def make_wordlist(wordfile):
+    with open(wordfile) as textfile:
+        wordlist_whitespaces = textfile.readlines()
+    # remove whitespaces
     wordlist = []
-    for word in original_wordlist:
+    for word in wordlist_whitespaces:
         stripped_word = word.strip()
         wordlist.append(stripped_word)
     return wordlist
 
-def get_input_word():
+def wordfound(wordlist):
+    if len(wordlist) == 1:
+        return True
+    else:
+        return False
+
+def get_string():
     print()
-    print('Input the current string (Use underscores for blanks) ')
-    input_word = input('string: ').strip()
-    return input_word
+    print(f'Input the current string (Use underscores for blanks) ')
+    string = input('string: ').strip()
+    return string
 
-def length_based(input_word, wordlist):
-    narrowed_list = []
+def filter_wordlength(string, wordlist):
+    filtered_wordlist = []
     for word in wordlist:
-        if len(word) == len(input_word):
-            narrowed_list.append(word)
-    return narrowed_list
+        if len(word) == len(string):
+            filtered_wordlist.append(word)
+    return filtered_wordlist
 
-def char_based(input_word, wordlist):
-    narrowed_list = []
+def filter_charnotfound(chars_notfound, wordlist):
+    filtered_wordlist = []
     for word in wordlist:
-        wordcheck = True
-        for idx,char in enumerate(input_word):
+        word_passedfiltration = True
+        for wordchar in word:
+            if wordchar in chars_notfound:
+                word_passedfiltration = False
+        if word_passedfiltration:
+            filtered_wordlist.append(word)
+    return filtered_wordlist
+
+
+def filter_charlocation(string, wordlist):
+    filtered_wordlist = []
+    for word in wordlist:
+        word_passedfiltration = True
+        for idx,char in enumerate(string):
             if char == '_':
                 pass
-            elif char == word[idx]:
-                pass    
-            else:
-                wordcheck = False
-        if wordcheck:
-            narrowed_list.append(word)
-    return narrowed_list
+            elif char != word[idx]:
+                word_passedfiltration = False
+        if word_passedfiltration:
+            filtered_wordlist.append(word)
+    return filtered_wordlist
 
-
-def freq_based(wordlist, chars_used):
-    original_letter_dict = {'a': 0, 'b': 0, 'c': 0, 'd': 0, 'e': 0, 'f': 0, 'g': 0,
+def suggested_char(chars_used, wordlist):
+    char_dict_all = {'a': 0, 'b': 0, 'c': 0, 'd': 0, 'e': 0, 'f': 0, 'g': 0,
                    'h': 0, 'i': 0, 'j': 0, 'k': 0, 'l': 0, 'm': 0, 'n': 0,
                    'o': 0, 'p': 0, 'q': 0, 'r': 0, 's': 0, 't': 0, 'u': 0,
                    'v': 0, 'w': 0, 'x': 0, 'y': 0, 'z': 0}
-
     # remove used characters
-    letter_dict = {}
-    for letter,count in original_letter_dict.items():
-        if letter not in chars_used:
-            letter_dict[letter] = count
-
+    char_dict = {}
+    for char in char_dict_all.keys():
+        if char not in chars_used :
+            char_dict[char] = 0
     # tally up characters
     for word in wordlist:
         for char in word:
-            if char in letter_dict:
-                letter_dict[char] += 1
-
-    # Choose most frequent character
+            if char in char_dict:
+                char_dict[char] += 1
+    # most frequent char
     most_frequent_char = ('null', -1)
-    for char,value in letter_dict.items():
+    for char,value in char_dict.items():
         if value > most_frequent_char[1]:
-           most_frequent_char = (char, value)
+            most_frequent_char = (char,value)
+    print()
+    print(f"I suggest you pick '{most_frequent_char[0]}'.")
     return most_frequent_char[0]
+
+def printnumwords(wordlist):
+    print()
+    if len(wordlist) == 1:
+        print(f'There is {len(wordlist)} word left!')
+    else:
+        print(f'There are {len(wordlist)} words left.')
+
+def complete(wordlist):
+    print()
+    print(f'Congratulations! The word is {wordlist[0]}.')
+
 
 # Run --------------------------------------------------------------------------
 def run():
     wordlist = make_wordlist('./somanywords.txt')
-    print(f'There are {len(wordlist)} words left.')
-    found = False
-    chars_used = []
-    while not found:
-        input_word = get_input_word()
-        narrowed_list = length_based(input_word, wordlist)
-        narrowed_list = char_based(input_word, narrowed_list)
-        if len(narrowed_list) == 1:
-            print(f'Word found! The word is: {narrowed_list[0]} ')
-            found = True
+    printnumwords(wordlist)
+    chars_found = []
+    chars_notfound = []
+    string = get_string()
+    previous_string = None
+    while not wordfound(wordlist):
+        chars_used = chars_found + chars_notfound
+        wordlist = filter_wordlength(string, wordlist)
+        wordlist = filter_charnotfound(chars_notfound, wordlist)
+        wordlist = filter_charlocation(string, wordlist)
+        if wordfound(wordlist):
+            break
+        printnumwords(wordlist)
+        char = suggested_char(chars_used, wordlist)
+        previous_string = string
+        string = get_string()
+        if previous_string == string:
+            chars_notfound.append(char)
         else:
-            most_frequent_char = freq_based(narrowed_list, chars_used)
-            chars_used.append(most_frequent_char)
-            print(f'You should choose "{most_frequent_char}" this time.')
-        print(f'There are {len(narrowed_list)} words left.')
-    print('Congratulations!')
+            chars_found.append(char)
+    complete(wordlist)
+
 
 
 if __name__ == '__main__':
