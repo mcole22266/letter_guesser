@@ -1,4 +1,21 @@
-# Solution to Programming Exercise
+# Purpose
+
+A friend of mine informed me that his company was hiring and suggested that I attempt this programming 
+challenge for the sake of practice. 
+
+## Task:
+
+Given a word guessing game (like that of Hangman), create a program to help optimize the user's guesses. 
+
+**Note**: 
+- Original Hangman game was not working properly so I rebuilt a similar game in Python located at 
+`./lib/wordGuessingGame.py`. 
+    - Uses `./lib/soManyWords.txt` as a word bank
+- Solution is located at `./lib/guess_letter.py`
+- Did not want to muck up the original directory structure so I've simply added my own solution 
+
+## Solution to Programming Exercise
+
 All necessary files are located at `letter_guesser/lib`
 
 ## Files
